@@ -42,12 +42,18 @@ class PokerHand
     {
         // split "As Ks Qs Js 10s" into individual strings
         $cardStrings = explode(' ', trim($handString));
-        
+        // now cardStrings = 
+        // Array(
+        //     [0] => As
+        //     [1] => Ks
+        //     [2] => Qs
+        //     [3] => Js
+        //     [4] => 10s
+        // )
         if (count($cardStrings) !== 5) {
             throw new Exception('Hand must have exactly 5 cards');
         }
 
-        // create the card objects
         foreach ($cardStrings as $cardString) {
             $this->cards[] = new Card($cardString);
         }
@@ -58,7 +64,7 @@ class PokerHand
         });
     }
 
-    public function getHand()
+    public function getHandRanked()
     {
         $ranker = new HandRanker();
         return $ranker->rank($this);
@@ -66,11 +72,11 @@ class PokerHand
 
     public function getRanks()
     {
-        $values = [];
+        $ranks = [];
         foreach ($this->cards as $card) {
-            $values[] = $card->value;
+            $ranks[] = $card->value;
         }
-        return $values;
+        return $ranks;
     }
 
     public function getSuits()
@@ -82,16 +88,16 @@ class PokerHand
         return $suits;
     }
 
-    // count how many of each rank
+    // count how many of each rank (A, Q, K, etc.)
     public function getRankCounts()
     {
         $counts = [];
 
-        foreach ($this->getRanks() as $value) {
-            if (!isset($counts[$value])) {
-                $counts[$value] = 0;
+        foreach ($this->getRanks() as $rank) {
+            if (!isset($counts[$rank])) {
+                $counts[$rank] = 0;
             }
-            $counts[$value]++;
+            $counts[$rank]++;
         }
 
         // sort counts descending
@@ -129,14 +135,14 @@ class HandRanker
     // 5 cards in a row by rank
     private function isStraight($hand)
     {
-        $values = $hand->getRanks();
+        $ranks = $hand->getRanks();
 
         // Check if each card is 1 less than the previous
         for ($i = 0; $i < 4; $i++) {
-            if ($values[$i] - $values[$i + 1] !== 1) {
+            if ($ranks[$i] - $ranks[$i + 1] !== 1) {
                 // Special case: A-2-3-4-5 (ace can be low)
-                if ($values[0] === 14 && $values[1] === 5 &&
-                    $values[2] === 4 && $values[3] === 3 && $values[4] === 2) {
+                if ($ranks[0] === 14 && $ranks[1] === 5 &&
+                    $ranks[2] === 4 && $ranks[3] === 3 && $ranks[4] === 2) {
                     return true;
                 }
                 return false;
@@ -153,10 +159,10 @@ class HandRanker
             return false;
         }
 
-        $values = $hand->getRanks();
+        $ranks = $hand->getRanks();
         // check for highest cards
-        return $values[0] === 14 && $values[1] === 13 &&
-               $values[2] === 12 && $values[3] === 11 && $values[4] === 10;
+        return $ranks[0] === 14 && $ranks[1] === 13 &&
+               $ranks[2] === 12 && $ranks[3] === 11 && $ranks[4] === 10;
     }
 
     // Straight + flush
