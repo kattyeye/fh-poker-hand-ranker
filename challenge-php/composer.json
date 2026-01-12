@@ -7,6 +7,10 @@
     {
       "name": "Adam Hundley",
       "email": "adamhundley@fareharbor.com"
+    },
+    {
+      "name": "Kat Ingram",
+      "email": "katherineingram5@icloud.com"
     }
   ],
   "require": {
@@ -14,6 +18,8 @@
   },
   "scripts": {
     "phpunit": "phpunit --colors=always",
+    "poker:examples": "php test/poker-hand-examples.php",
+    "poker:demo": "php test/poker-game-demo.php",
     "test-poker": [
       "phpunit --colors=always test/PokerHandTest.php"
     ],
